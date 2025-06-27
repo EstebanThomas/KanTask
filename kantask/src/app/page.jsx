@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link';
 
 export default function Home(){
     return (
@@ -23,8 +24,12 @@ export default function Home(){
                 au quotidien.
             </p>
             <div className='flex justify-center items-center gap-50 mt-10'>
-                <button className='btn-primary'>SIGN IN</button>
-                <button className='btn-primary'>SIGN UP</button>
+                <Link href="/signin">
+                    <button className='btn-primary'>SIGN IN</button>
+                </Link>
+                <Link href="/signup">
+                    <button className='btn-primary'>SIGN UP</button>
+                </Link>
             </div>
             <div className='flex justify-center items-center mt-10 gap-10'>
                 <div className='relative'>

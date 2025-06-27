@@ -7,9 +7,10 @@
 
 @theme {
     --color-main: #009688;
+    --color-buttonHover : rgba(0, 150, 136, 0.5);
     --color-bg: #F5F5F5;
     --color-black: #333333;
-    --color-gray: #666666;
+    --color-gray: #D9D9D9;
     --color-error: #D31F1A;
     --color-success: #4CAF50;
 }
@@ -34,7 +35,7 @@
 }
 
 .btn-primary:hover{
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 2px 8px /*rgba(0, 0, 0, 0.2)*/ var(--color-buttonHover);
     transition: all 0.3s ease;
 }
 
@@ -74,4 +75,48 @@ strong{
 .title-effect:hover{
     color: var(--color-main);
     transition: all 0.3s ease;
+}
+
+.input-form{
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+    background-color: var(--color-gray);
+    border-radius: 8px;
+    font-size: 1.25rem;
+    padding: 3px;
+}
+
+.label-form{
+    font-size: 1.25rem;
+}
+
+.div-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-right: 2rem;
+    margin-left: 2rem;
+}
+
+/*BREAKPOINT MD*/
+@media (min-width: 768px) {
+    .div-form {
+        margin-right: 12rem;
+        margin-left: 12rem;
+    }
+}
+
+/*BREAKPOINT XL*/
+@media (min-width: 1280px) {
+    .div-form {
+        margin-right: 25rem;
+        margin-left: 25rem;
+    }
+}
+
+/*BREAKPOINT 2XL*/
+@media (min-width: 1536px) {
+    .div-form {
+        margin-right: 35rem;
+        margin-left: 35rem;
+    }
 }
