@@ -3,10 +3,18 @@
 import Image from 'next/image'
 import Link from 'next/link';
 import { useState } from 'react'
+import EditProjectPopup from '../../components/EditProject';
+import DeleteProjectPopup from '../../components/DeleteProject';
+
+
+
 
 export default function signup(){
 
     const [projects, setProjects] = useState([])
+    const [editingProject, setEditingProject] = useState(null)
+    const [newTitle, setNewTitle] = useState('')
+    const [projectToDelete, setProjectToDelete] = useState(null);
 
     const AddProject = () => {
         setProjects([...projects, { id: Date.now(), title: 'TITLE' }])
@@ -15,6 +23,35 @@ export default function signup(){
     const DeleteProject = (id) => {
         setProjects(projects.filter(project => project.id !== id))
     }
+
+    const StartEdit = (project) => {
+        setEditingProject(project)
+        setNewTitle(project.title)
+    }
+
+    const ConfirmEdit = () => {
+        setProjects(projects.map(p =>
+            p.id === editingProject.id ? { ...p, title: newTitle } : p
+        ))
+        setEditingProject(null)
+    }
+
+    const CancelEdit = () => {
+        setEditingProject(null)
+    }
+
+    const StartDelete = (project) => {
+        setProjectToDelete(project);
+    };
+
+    const ConfirmDelete = () => {
+        DeleteProject(projectToDelete.id);
+        setProjectToDelete(null);
+    };
+
+    const CancelDelete = () => {
+        setProjectToDelete(null);
+    };
 
     return (
         <div>
@@ -25,6 +62,7 @@ export default function signup(){
                         alt="Logo de l'application"
                         width={500}
                         height={300}
+                        priority
                         className="w-70 md:w-100 h-auto"
                     />
                 </Link>
@@ -75,11 +113,10 @@ export default function signup(){
                     />
                 </button>                
             </div>
-            <div id='projects' className='flex flex-col justify-center items-center gap-5 mt-5'>
-
+            <div id='projects' className='flex flex-col justify-center items-center gap-5 mt-5 mb-5 xl:grid xl:grid-cols-2 xl:justify-items-center 3xl:ml-50 3xl:mr-50 3xl:gap-7'>
                 {projects.map((project) => (
-                    <div key={project.id} className='btn-project relative w-70 h-30 md:w-125 md:h-40'>
-                        <button title='DELETE PROJECT' className='absolute top-0 left-0' onClick={() => DeleteProject(project.id)}>
+                    <div key={project.id} className='btn-project relative w-70 md:w-125 xl:w-150 2xl:w-175 h-30  md:h-40'>
+                        <button title='DELETE PROJECT' className='absolute top-0 left-0' onClick={() => StartDelete(project)}>
                             <Image
                                 src="/Close.svg"
                                 alt="Delete project"
@@ -88,7 +125,7 @@ export default function signup(){
                                 className="w-12 md:w-15 h-auto"
                             />
                         </button>
-                        <button title='EDIT PROJECT' className='absolute top-0 right-0'>
+                        <button title='EDIT PROJECT' className='absolute top-0 right-0' onClick={() => StartEdit(project)}>
                             <Image
                                 src="/Edit.svg"
                                 alt="Delete project"
@@ -103,6 +140,25 @@ export default function signup(){
                     </div>
                 ))}
             </div>
+            {editingProject && (
+                <EditProjectPopup
+                    currentTitle={editingProject.title}
+                    onClose={CancelEdit}
+                    onSave={(title) => {
+                    setProjects(projects.map(p =>
+                        p.id === editingProject.id ? { ...p, title } : p
+                    ));
+                    setEditingProject(null);
+                    }}
+                />
+                )}
+            {projectToDelete && (
+                <DeleteProjectPopup
+                    onClose={CancelDelete}
+                    onConfirm={ConfirmDelete}
+                    projectTitle={projectToDelete.title}
+                />
+            )}
         </div>
     )
 }
