@@ -32,7 +32,7 @@ export default function signup(){
                     <label htmlFor="confirmPassword" className='label-form'>Confirm password</label>
                     <input id='confirmPassword' name='confirmPassword' className='input-form' type='password'></input>
                 </div>
-                <div className='flex flex-col justify-center items-center mt-5 md:mt-10 gap-3 md:gap-5'>
+                <div className='flex flex-col justify-center items-center mt-5 md:mt-10 gap-3 md:gap-5 mb-5'>
                     <button className='btn-primary' type='submit'>
                         SIGN UP
                     </button>

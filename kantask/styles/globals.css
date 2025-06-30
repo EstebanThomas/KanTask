@@ -41,7 +41,7 @@
 
 h1, h2 ,h3{
     font-family: var(--font-merriweather);
-    font-size: 2rem;
+    font-size: 1.75rem;
 }
 
 body {
@@ -95,6 +95,13 @@ strong{
     justify-content: flex-start;
     margin-right: 2rem;
     margin-left: 2rem;
+}
+
+.btn-project{
+    background-color: var(--color-main);
+    border-radius: 8px;
+    border: 2px solid var(--color-black);
+    color: white;
 }
 
 /*BREAKPOINT MD*/
