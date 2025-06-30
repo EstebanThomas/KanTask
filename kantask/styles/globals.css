@@ -105,11 +105,21 @@ strong{
     color: white;
 }
 
+.board{
+    background-color: var(--color-main);
+    border-radius: 8px;
+    border: 2px solid var(--color-black);
+    margin: 1rem;
+}
+
 /*BREAKPOINT MD*/
 @media (min-width: 768px) {
     .div-form {
         margin-right: 12rem;
         margin-left: 12rem;
+    }
+    .board{
+        margin: 1.5rem;
     }
 }
 
@@ -126,5 +136,9 @@ strong{
     .div-form {
         margin-right: 35rem;
         margin-left: 35rem;
+    }
+    .board{
+        margin-left: 3rem;
+        margin-right: 3rem;
     }
 }

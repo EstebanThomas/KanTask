@@ -9,7 +9,7 @@ import DeleteProjectPopup from '../../components/DeleteProject';
 
 
 
-export default function signup(){
+export default function projects(){
 
     const [projects, setProjects] = useState([])
     const [editingProject, setEditingProject] = useState(null)
@@ -90,11 +90,22 @@ export default function signup(){
                         />
                     </Link>
                 </button>
-                <button title='MODIFY PROFILE'>
-                    <Link href="/">
+                <button title='ACCOUNT'>
+                    <Link href="/account">
                         <Image
                             src="/User.svg"
-                            alt="Modify profile"
+                            alt="Modify account"
+                            width={50}
+                            height={50}
+                            className="w-12 md:w-18 h-auto"
+                        />
+                    </Link>
+                </button>
+                <button title='PROJECTS'>
+                    <Link href="/projects">
+                        <Image
+                            src="/Projects.svg"
+                            alt="Project manager"
                             width={50}
                             height={50}
                             className="w-12 md:w-18 h-auto"
