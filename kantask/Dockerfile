@@ -4,7 +4,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 
@@ -17,7 +17,7 @@ WORKDIR /app
 
 COPY --from=builder /app ./
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 EXPOSE 3000
 
