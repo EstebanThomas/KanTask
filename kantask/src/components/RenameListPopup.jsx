@@ -8,7 +8,7 @@ export default function RenameListPopup({ onClose, onRename, currentName }) {
 
     return (
     <Popup
-        title="Rename the list"
+        title="List name"
         onClose={onClose}
         onConfirm={() => {
         if (listName.trim()) {

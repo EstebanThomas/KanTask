@@ -37,7 +37,7 @@ export default function EditCardPopup({ onClose, onSave, task }) {
         />
         <div className="flex justify-end gap-3">
             <button onClick={onClose} className="px-3 py-1 bg-gray-300 rounded">Cancel</button>
-            <button onClick={handleSubmit} className="px-3 py-1 bg-blue-500 text-white rounded">Save</button>
+            <button onClick={handleSubmit} className="px-3 py-1 bg-success text-white rounded">Save</button>
         </div>
         </div>
     </div>

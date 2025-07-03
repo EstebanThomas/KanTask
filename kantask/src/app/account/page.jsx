@@ -23,7 +23,7 @@ export default function account(){
                             alt="Home"
                             width={50}
                             height={50}
-                            className="w-12 md:w-18 h-auto"
+                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
                     </Link>
                 </button>
@@ -34,7 +34,7 @@ export default function account(){
                             alt="Sign out"
                             width={50}
                             height={50}
-                            className="w-12 md:w-18 h-auto"
+                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
                     </Link>
                 </button>
@@ -45,7 +45,7 @@ export default function account(){
                             alt="Modify profile"
                             width={50}
                             height={50}
-                            className="w-12 md:w-18 h-auto"
+                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
                     </Link>
                 </button>
@@ -56,7 +56,7 @@ export default function account(){
                             alt="Project manager"
                             width={50}
                             height={50}
-                            className="w-12 md:w-18 h-auto"
+                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
                     </Link>
                 </button>

@@ -75,7 +75,7 @@ export default function projects(){
                             alt="Home"
                             width={50}
                             height={50}
-                            className="w-12 md:w-18 h-auto"
+                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
                     </Link>
                 </button>
@@ -86,7 +86,7 @@ export default function projects(){
                             alt="Sign out"
                             width={50}
                             height={50}
-                            className="w-12 md:w-18 h-auto"
+                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
                     </Link>
                 </button>
@@ -97,7 +97,7 @@ export default function projects(){
                             alt="Modify account"
                             width={50}
                             height={50}
-                            className="w-12 md:w-18 h-auto"
+                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
                     </Link>
                 </button>
@@ -108,7 +108,7 @@ export default function projects(){
                             alt="Project manager"
                             width={50}
                             height={50}
-                            className="w-12 md:w-18 h-auto"
+                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
                     </Link>
                 </button>
@@ -120,7 +120,7 @@ export default function projects(){
                         alt="Create project"
                         width={50}
                         height={50}
-                        className="w-12 md:w-18 h-auto"
+                        className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                     />
                 </button>                
             </div>
@@ -133,7 +133,7 @@ export default function projects(){
                                 alt="Delete project"
                                 width={50}
                                 height={50}
-                                className="w-12 md:w-15 h-auto"
+                                className="w-12 md:w-15 h-auto hover:bg-primary hover:opacity-65"
                             />
                         </button>
                         <button title='EDIT PROJECT' className='absolute top-0 right-0' onClick={() => StartEdit(project)}>
@@ -142,7 +142,7 @@ export default function projects(){
                                 alt="Delete project"
                                 width={50}
                                 height={50}
-                                className="w-11 md:w-14 h-auto"
+                                className="w-11 md:w-14 h-auto hover:bg-primary hover:opacity-65"
                             />
                         </button>
                         <div className='absolute top-4/7 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-auto max-w-full max-h-full whitespace-nowrap p-2'>

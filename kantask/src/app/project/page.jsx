@@ -189,22 +189,22 @@ export default function Project() {
                 <div className='flex flex-1 justify-center items-center gap-10 mt-5'>
                     <button title='HOME'>
                         <Link href="/">
-                            <Image src="/Home.svg" alt="Home" width={50} height={50} className="w-12 md:w-18 h-auto" />
+                            <Image src="/Home.svg" alt="Home" width={50} height={50} className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50" />
                         </Link>
                     </button>
                     <button title='SIGN OUT'>
                         <Link href="/">
-                            <Image src="/Sign.svg" alt="Sign out" width={50} height={50} className="w-12 md:w-18 h-auto" />
+                            <Image src="/Sign.svg" alt="Sign out" width={50} height={50} className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50" />
                         </Link>
                     </button>
                     <button title='ACCOUNT'>
                         <Link href="/account">
-                            <Image src="/User.svg" alt="Modify account" width={50} height={50} className="w-12 md:w-18 h-auto" />
+                            <Image src="/User.svg" alt="Modify account" width={50} height={50} className="w-12 md:w-18 h-autohover:bg-bg hover:opacity-50" />
                         </Link>
                     </button>
                     <button title='PROJECTS'>
                         <Link href="/projects">
-                            <Image src="/Projects.svg" alt="Project manager" width={50} height={50} className="w-12 md:w-18 h-auto" />
+                            <Image src="/Projects.svg" alt="Project manager" width={50} height={50} className="w-12 md:w-18 h-autohover:bg-bg hover:opacity-50" />
                         </Link>
                     </button>
                 </div>
@@ -213,7 +213,8 @@ export default function Project() {
             {/* BOARD */}
             <div id="board" className="board flex-1 p-4 pt-2 overflow-y-auto">
 
-                <div className='flex justify-center items-center gap-10 overflow-x-auto whitespace-nowrap p-1'>
+                <div className='flex justify-between items-center gap-10 overflow-x-auto whitespace-nowrap p-1'>
+                    <h1 className='text-white text-2xl font-bold'>TITLE</h1>                    
                     <button onClick={() => setPopup({ type: "renameList", columnId: null })} className="hover:bg-primary hover:opacity-65 rounded-xl" title='Add list'>
                         <Image
                             src="/AddDark.svg"
@@ -223,9 +224,7 @@ export default function Project() {
                             className="w-15 h-auto"
                         />
                     </button>
-                    <h1 className='text-white text-2xl font-bold'>TITLE</h1>
                 </div>
-
                 <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="all-columns" direction="horizontal" type="COLUMN">
                         {(provided) => (
@@ -245,10 +244,10 @@ export default function Project() {
                                                     {...provided.draggableProps}
                                                     ref={provided.innerRef}
                                                     {...provided.dragHandleProps}
-                                                    className="w-60 p-3 bg-bg rounded shadow min-w-60 h-full max-h-145 overflow-y-auto"
+                                                    className="w-60 p-3 bg-bg rounded shadow-lg min-w-60 h-full max-h-145 overflow-y-auto"
                                                 >
                                                     <div className="flex justify-between items-center mb-2 group">
-                                                        <h2 className="text-lg font-merriweather font-bold">{column.name}</h2>
+                                                        <h2 className="text-lg font-merriweather font-bold"><strong>{column.name}</strong></h2>
                                                         <div className="flex gap-1 actions">
                                                             <button
                                                                 onClick={() => setPopup({ type: "renameList", columnId })}
@@ -295,8 +294,8 @@ export default function Project() {
                                                                                 {...provided.dragHandleProps}
                                                                                 className="p-2 mb-2 bg-white rounded shadow hover:shadow-xl group"
                                                                             >
-                                                                                <strong>{item.title}</strong>
-                                                                                <p className="text-sm">{item.description}</p>
+                                                                                <strong className='overflow-hidden flex flex-wrap'>{item.title}</strong>
+                                                                                <p className="text-sm overflow-hidden flex flex-wrap">{item.description}</p>
                                                                                 <div className="flex gap-2 mt-1 actions">
                                                                                     <button
                                                                                         onClick={() => setPopup({ type: "editCard", columnId, taskId: item.id })}

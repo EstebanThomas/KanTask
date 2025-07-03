@@ -9,7 +9,7 @@ export default function ConfirmDeletePopup({ onClose, onDelete }) {
         onClose={onClose}
         onConfirm={onDelete}
     >
-        <p className="text-gray-700">This action is irreversible.</p>
+        <p className="text-black">This action is irreversible.</p>
     </Popup>
     );
 }
