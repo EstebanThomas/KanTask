@@ -10,7 +10,7 @@
     --color-buttonHover : rgba(0, 150, 136, 0.5);
     --color-bg: #F5F5F5;
     --color-black: #333333;
-    --color-gray: #D9D9D9;
+    --color-gray: #C6C6C6;
     --color-error: #D31F1A;
     --color-success: #4CAF50;
     --breakpoint-3xl: 105rem;
@@ -110,6 +110,21 @@ strong{
     border-radius: 8px;
     border: 2px solid var(--color-black);
     margin: 1rem;
+}
+
+.actions{
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.group:hover .actions{
+    opacity: 1;
+    pointer-events: auto;
+    user-select: auto;
+    visibility: visible;
 }
 
 /*BREAKPOINT MD*/

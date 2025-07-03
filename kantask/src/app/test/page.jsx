@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useState } from "react";
 
-import AddCardPopup from "../../components/AddCardPopup";
+import AddTaskPopup from "../../components/AddCardPopup";
 import RenameListPopup from "../../components/RenameListPopup";
 import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
-import EditCardPopup from "../../components/EditCardPopup";
+import EditTaskPopup from "../../components/EditCardPopup";
 
 export default function Project() {
 
@@ -17,11 +17,11 @@ export default function Project() {
         todo: {
             name: "To do",
             items: [
-                { id: "1", title: "Card 1", description: "Description of card 1" },
-                { id: "2", title: "Card 2", description: "Description of card 2" }
+                { id: "1", title: "Tâche 1", description: "Description de la tâche 1" },
+                { id: "2", title: "Tâche 2", description: "Description de la tâche 2" }
             ]
         },
-        doing: { name: "Doing", items: [{ id: "3", title: "Card 3", description: "Description of card 3" }] },
+        doing: { name: "Doing", items: [{ id: "3", title: "Tâche 3", description: "Description de la tâche 3" }] },
         testing: { name: "Testing", items: [] },
         done: { name: "Done", items: [] },
     });
@@ -211,26 +211,16 @@ export default function Project() {
             </div>
 
             {/* BOARD */}
-            <div id="board" className="board flex-1 p-4 pt-2 overflow-y-auto">
-
-                <div className='flex justify-center items-center gap-10 overflow-x-auto whitespace-nowrap p-1'>
-                    <button onClick={() => setPopup({ type: "renameList", columnId: null })} className="hover:bg-primary hover:opacity-65 rounded-xl" title='Add list'>
-                        <Image
-                            src="/AddDark.svg"
-                            alt="Add list"
-                            width={50}
-                            height={50}
-                            className="w-15 h-auto"
-                        />
-                    </button>
-                    <h1 className='text-white text-2xl font-bold'>TITLE</h1>
-                </div>
+            <div id="board" className="board flex-1 p-4">
+                <button onClick={() => setPopup({ type: "renameList", columnId: null })} className="p-2 mb-4 bg-green-500 text-white rounded hover:bg-green-600">
+                    ➕ Créer une liste
+                </button>
 
                 <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="all-columns" direction="horizontal" type="COLUMN">
                         {(provided) => (
                             <div
-                                className="flex gap-4 overflow-x-auto h-auto p-2"
+                                className="flex gap-4 overflow-x-auto"
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                             >
@@ -245,36 +235,24 @@ export default function Project() {
                                                     {...provided.draggableProps}
                                                     ref={provided.innerRef}
                                                     {...provided.dragHandleProps}
-                                                    className="w-60 p-3 bg-bg rounded shadow min-w-60 h-full max-h-145 overflow-y-auto"
+                                                    className="w-64 p-3 bg-gray-100 rounded shadow"
                                                 >
-                                                    <div className="flex justify-between items-center mb-2 group">
-                                                        <h2 className="text-lg font-merriweather font-bold">{column.name}</h2>
-                                                        <div className="flex gap-1 actions">
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <h2 className="text-lg font-bold">{column.name}</h2>
+                                                        <div className="flex gap-1">
                                                             <button
                                                                 onClick={() => setPopup({ type: "renameList", columnId })}
-                                                                className="text-sm text-white px-1 rounded hover:bg-bg hover:opacity-65"
-                                                                title="Rename list"
+                                                                className="text-sm bg-blue-400 text-white px-1 rounded"
+                                                                title="Renommer la liste"
                                                             >
-                                                                <Image
-                                                                    src="/Edit.svg"
-                                                                    alt="Rename list"
-                                                                    width={50}
-                                                                    height={50}
-                                                                    className="w-10 h-auto object-contain"
-                                                                />
+                                                                ✏️
                                                             </button>
                                                             <button
                                                                 onClick={() => setPopup({ type: "deleteList", columnId })}
-                                                                className="text-sm text-white px-1 rounded hover:bg-bg hover:opacity-65"
-                                                                title="Delete list"
+                                                                className="text-sm bg-red-400 text-white px-1 rounded"
+                                                                title="Supprimer la liste"
                                                             >
-                                                                <Image
-                                                                    src="/Close.svg"
-                                                                    alt="Delete list"
-                                                                    width={50}
-                                                                    height={50}
-                                                                    className="w-10 h-auto object-contain"
-                                                                />
+                                                                🗑️
                                                             </button>
                                                         </div>
                                                     </div>
@@ -284,7 +262,7 @@ export default function Project() {
                                                             <div
                                                                 {...provided.droppableProps}
                                                                 ref={provided.innerRef}
-                                                                className="min-h-[100px] p-2 rounded"
+                                                                className="min-h-[100px] p-2 bg-white rounded shadow"
                                                             >
                                                                 {column.items.map((item, index) => (
                                                                     <Draggable key={item.id} draggableId={item.id} index={index}>
@@ -293,36 +271,24 @@ export default function Project() {
                                                                                 ref={provided.innerRef}
                                                                                 {...provided.draggableProps}
                                                                                 {...provided.dragHandleProps}
-                                                                                className="p-2 mb-2 bg-white rounded shadow hover:shadow-xl group"
+                                                                                className="p-2 mb-2 bg-blue-200 rounded"
                                                                             >
                                                                                 <strong>{item.title}</strong>
                                                                                 <p className="text-sm">{item.description}</p>
-                                                                                <div className="flex gap-2 mt-1 actions">
+                                                                                <div className="flex gap-2 mt-1">
                                                                                     <button
-                                                                                        onClick={() => setPopup({ type: "editCard", columnId, taskId: item.id })}
-                                                                                        className="text-blue-600 hover:bg-white hover:opacity-65"
-                                                                                        title="Edit card"
+                                                                                        onClick={() => setPopup({ type: "editTask", columnId, taskId: item.id })}
+                                                                                        className="text-blue-600"
+                                                                                        title="Modifier la tâche"
                                                                                     >
-                                                                                        <Image
-                                                                                            src="/Edit.svg"
-                                                                                            alt="Edit card"
-                                                                                            width={50}
-                                                                                            height={50}
-                                                                                            className="w-8 h-auto object-contain"
-                                                                                        />
+                                                                                        ✏️
                                                                                     </button>
                                                                                     <button
-                                                                                        onClick={() => setPopup({ type: "deleteCard", columnId, taskId: item.id })}
-                                                                                        className="text-red-600 hover:bg-white hover:opacity-65"
-                                                                                        title="Delete card"
+                                                                                        onClick={() => setPopup({ type: "deleteTask", columnId, taskId: item.id })}
+                                                                                        className="text-red-600"
+                                                                                        title="Supprimer la tâche"
                                                                                     >
-                                                                                        <Image
-                                                                                            src="/Close.svg"
-                                                                                            alt="Delete card"
-                                                                                            width={50}
-                                                                                            height={50}
-                                                                                            className="w-8 h-auto object-contain"
-                                                                                        />
+                                                                                        🗑️
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
@@ -331,17 +297,10 @@ export default function Project() {
                                                                 ))}
                                                                 {provided.placeholder}
                                                                 <button
-                                                                    onClick={() => setPopup({ type: "addCard", columnId })}
-                                                                    className="mt-2 w-full flex justify-center items-center rounded py-1 hover:bg-bg hover:opacity-50"
-                                                                    title='Add card'
+                                                                    onClick={() => setPopup({ type: "addTask", columnId })}
+                                                                    className="mt-2 w-full bg-green-300 text-black rounded py-1 hover:bg-green-400"
                                                                 >
-                                                                    <Image
-                                                                        src="/Add.svg"
-                                                                        alt="Delete card"
-                                                                        width={50}
-                                                                        height={50}
-                                                                        className="w-12 h-auto object-contain"
-                                                                    />
+                                                                    ➕ Ajouter une tâche
                                                                 </button>
                                                             </div>
                                                         )}
@@ -359,8 +318,8 @@ export default function Project() {
             </div>
 
             {/* Popups */}
-            {popup?.type === "addCard" && (
-                <AddCardPopup
+            {popup?.type === "addTask" && (
+                <AddTaskPopup
                     onClose={() => setPopup(null)}
                     onAdd={(taskTitle) => handleAddTask(popup.columnId, taskTitle)}
                 />
@@ -377,24 +336,24 @@ export default function Project() {
                     onClose={() => setPopup(null)}
                     onDelete={() => handleDeleteList(popup.columnId)}
                 >
-                    <p>Do you really want to delete this list?</p>
+                    <p>Voulez-vous vraiment supprimer cette liste ?</p>
                 </ConfirmDeletePopup>
             )}
 
-            {popup?.type === "editCard" && (
-                <EditCardPopup
+            {popup?.type === "editTask" && (
+                <EditTaskPopup
                     task={getTask(popup.columnId, popup.taskId)}
                     onClose={() => setPopup(null)}
                     onSave={(updatedTask) => handleEditTask(popup.columnId, updatedTask)}
                 />
             )}
 
-            {popup?.type === "deleteCard" && (
+            {popup?.type === "deleteTask" && (
                 <ConfirmDeletePopup
                     onClose={() => setPopup(null)}
                     onDelete={() => handleDeleteTask(popup.columnId, popup.taskId)}
                 >
-                    <p>Are you sure you want to delete this card?</p>
+                    <p>Voulez-vous vraiment supprimer cette tâche ?</p>
                 </ConfirmDeletePopup>
             )}
 
