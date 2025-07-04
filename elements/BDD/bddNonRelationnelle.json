@@ -1,0 +1,12 @@
+use kantask_boards;
+
+db.boards.insertOne({
+    lists: [
+        { id: 1, name: "To Do" },
+        { id: 2, name: "In Progress" }
+    ],
+    cards: [
+        { id: 1, listId: 1, title: "Tâche 1", description: "Description de la tâche 1" },
+        { id: 2, listId: 2, title: "Tâche 2", description: "Description de la tâche 2" }
+    ]
+});
