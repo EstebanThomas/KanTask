@@ -1,15 +1,39 @@
 'use client'
 
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image'
 import Link from 'next/link';
-import { useState } from 'react'
-import EditProjectPopup from '../../components/EditProject';
-import DeleteProjectPopup from '../../components/DeleteProject';
-
-
+import EditProjectPopup from '../../../components/EditProject';
+import DeleteProjectPopup from '../../../components/DeleteProject';
 
 
 export default function projects(){
+
+    const [user, setUser] = useState({});
+    const router = useRouter();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await fetch("/api/user", {
+                    credentials: "include",
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setUser(data);
+                } else {
+                    console.error("Failed to fetch user");
+                    router.push("/");
+                }
+            } catch (error) {
+                console.error("Error fetching user:", error);
+                router.push("/");
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     const [projects, setProjects] = useState([])
     const [editingProject, setEditingProject] = useState(null)
@@ -53,6 +77,20 @@ export default function projects(){
         setProjectToDelete(null);
     };
 
+    const handleSignout = async () => {
+        await fetch("/api/signout", {
+            method: "POST",
+            credentials: "include",
+        });
+        router.push("/");
+    };
+
+    const account = () => {
+        router.push(`/account/${user.id}`);
+    };
+
+    if (!user.name) return <p className='flex justify-center items-center text-2xl'>Loading user...</p>;
+
     return (
         <div>
             <div className="flex justify-center items-center">
@@ -67,6 +105,7 @@ export default function projects(){
                     />
                 </Link>
             </div>
+            <h1 className='text-center m-2'>{user.email}</h1>
             <div className='flex justify-center items-center gap-10 mt-5'>
                 <button title='HOME'>
                     <Link href="/">
@@ -79,7 +118,7 @@ export default function projects(){
                         />
                     </Link>
                 </button>
-                <button title='SIGN OUT'>
+                <button title='SIGN OUT' onClick={handleSignout}>
                     <Link href="/">
                         <Image
                             src="/Sign.svg"
@@ -90,8 +129,7 @@ export default function projects(){
                         />
                     </Link>
                 </button>
-                <button title='ACCOUNT'>
-                    <Link href="/account">
+                <button title='ACCOUNT' onClick={account}>
                         <Image
                             src="/User.svg"
                             alt="Modify account"
@@ -99,18 +137,6 @@ export default function projects(){
                             height={50}
                             className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
                         />
-                    </Link>
-                </button>
-                <button title='PROJECTS'>
-                    <Link href="/projects">
-                        <Image
-                            src="/Projects.svg"
-                            alt="Project manager"
-                            width={50}
-                            height={50}
-                            className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50"
-                        />
-                    </Link>
                 </button>
             </div>
             <div className='flex justify-center items-center mt-10'>

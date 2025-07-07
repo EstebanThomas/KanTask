@@ -16,3 +16,12 @@ export async function connectMysql() {
     connection.release();
     return true;
 }
+
+export async function connectDB() {
+    return pool;
+}
+
+export async function getUser(id) {
+    const [rows] = await db.execute("SELECT id, name, email FROM users WHERE id = ?", [id]);
+    return rows[0];
+}
