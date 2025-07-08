@@ -1,8 +1,8 @@
-import { connectMongo } from "../../../lib/mongodb";
+import { connectMongoDB } from "../../../lib/mongo";
 
 export default async function handler(req, res) {
     try {
-        await connectMongo();
+        await connectMongoDB();
         res.status(200).json({ message: "MongoDB Connected ✅" });
     } catch (error) {
         console.error(error);

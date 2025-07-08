@@ -66,130 +66,165 @@ export default function Project() {
         return column.items.find(task => task.id === taskId) || null;
     };
 
-    const onDragEnd = (result) => {
+    const onDragEnd = async (result) => {
         if (!result.destination) return;
 
         const { source, destination, type } = result;
 
-
         if (type === "COLUMN") {
-            const newColumnOrder = Array.from(columnOrder);
-            const [removed] = newColumnOrder.splice(source.index, 1);
-            newColumnOrder.splice(destination.index, 0, removed);
-            setColumnOrder(newColumnOrder);
+            const newOrder = Array.from(columnOrder);
+            const [removed] = newOrder.splice(source.index, 1);
+            newOrder.splice(destination.index, 0, removed);
+            setColumnOrder(newOrder);
+
+            // Save list order
+            await fetch(`/api/project/${id}/lists/order`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ newOrder })
+            });
         } else {
-            const sourceColumn = columns[source.droppableId];
-            const destColumn = columns[destination.droppableId];
-            const sourceItems = [...sourceColumn.items];
-            const destItems = [...destColumn.items];
-            const [removed] = sourceItems.splice(source.index, 1);
+            const sourceCol = columns[source.droppableId];
+            const destCol = columns[destination.droppableId];
+            const sourceItems = [...sourceCol.items];
+            const destItems = [...destCol.items];
+            const [moved] = sourceItems.splice(source.index, 1);
 
             if (source.droppableId === destination.droppableId) {
-                sourceItems.splice(destination.index, 0, removed);
-                setColumns({
-                    ...columns,
-                    [source.droppableId]: {
-                        ...sourceColumn,
-                        items: sourceItems,
-                    },
-                });
+                sourceItems.splice(destination.index, 0, moved);
+                setColumns(prev => ({
+                    ...prev,
+                    [source.droppableId]: { ...sourceCol, items: sourceItems }
+                }));
             } else {
-                destItems.splice(destination.index, 0, removed);
-                setColumns({
-                    ...columns,
-                    [source.droppableId]: {
-                        ...sourceColumn,
-                        items: sourceItems,
-                    },
-                    [destination.droppableId]: {
-                        ...destColumn,
-                        items: destItems,
-                    },
-                });
+                destItems.splice(destination.index, 0, moved);
+                setColumns(prev => ({
+                    ...prev,
+                    [source.droppableId]: { ...sourceCol, items: sourceItems },
+                    [destination.droppableId]: { ...destCol, items: destItems }
+                }));
             }
+
+            // Update position
+            await fetch(`/api/project/${id}/cards/move`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    cardId: moved._id,
+                    fromListId: source.droppableId,
+                    toListId: destination.droppableId,
+                    newIndex: destination.index
+                })
+            });
         }
     };
 
-    const handleAddTask = (listId, taskTitle) => {
-        const newTask = { id: Date.now().toString(), title: taskTitle, description: "" };
-        setColumns({
-            ...columns,
+
+    const handleAddCard = async (listId, taskTitle) => {
+        const res = await fetch(`/api/project/${id}/lists/${listId}/cards`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: taskTitle, description: "" })
+        });
+        const newCard = await res.json();
+
+        setColumns(prev => ({
+            ...prev,
             [listId]: {
-                ...columns[listId],
-                items: [...columns[listId].items, newTask],
-            },
-        });
+                ...prev[listId],
+                items: [...prev[listId].items, newCard]
+            }
+        }));
         setPopup(null);
     };
 
-    const handleRenameList = (listId, newName) => {
+
+    const handleRenameList = async (listId, newName) => {
         if (!listId) {
-            const newId = Date.now().toString();
-            setColumns({
-                ...columns,
-                [newId]: { name: newName, items: [] },
+            // Add new list
+            const res = await fetch(`/api/project/${id}/lists`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: newName })
             });
-            setColumnOrder([...columnOrder, newId]);
+            const newList = await res.json();
+            setColumns(prev => ({
+                ...prev,
+                [newList._id]: { name: newList.name, items: [] }
+            }));
+            setColumnOrder(prev => [...prev, newList._id]);
         } else {
-            setColumns({
-                ...columns,
-                [listId]: { ...columns[listId], name: newName },
+            // Rename list
+            await fetch(`/api/project/${id}/lists/${listId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: newName })
             });
+            setColumns(prev => ({
+                ...prev,
+                [listId]: { ...prev[listId], name: newName }
+            }));
         }
         setPopup(null);
     };
 
-    const handleDeleteList = (listId) => {
-        const newColumns = { ...columns };
-        delete newColumns[listId];
-        setColumns(newColumns);
 
-        setColumnOrder(columnOrder.filter(id => id !== listId));
-
-        setPopup(null);
-    };
-
-    const handleEditTask = (columnId, updatedTask) => {
-        setColumns(prev => {
-            const column = prev[columnId];
-            if (!column) return prev;
-            const newItems = column.items.map(task =>
-                task.id === updatedTask.id ? updatedTask : task
-            );
-            return {
-                ...prev,
-                [columnId]: {
-                    ...column,
-                    items: newItems,
-                },
-            };
+    const handleDeleteList = async (listId) => {
+        await fetch(`/api/project/${id}/lists/${listId}`, {
+            method: "DELETE"
         });
+
+        setColumns(prev => {
+            const newColumns = { ...prev };
+            delete newColumns[listId];
+            return newColumns;
+        });
+        setColumnOrder(prev => prev.filter(colId => colId !== listId));
         setPopup(null);
     };
 
-    const handleDeleteTask = (columnId, taskId) => {
-        setColumns(prev => {
-            const column = prev[columnId];
-            if (!column) return prev;
-            return {
-                ...prev,
-                [columnId]: {
-                    ...column,
-                    items: column.items.filter(task => task.id !== taskId),
-                },
-            };
+
+    const handleEditCard = async (listId, updatedTask) => {
+        await fetch(`/api/project/${id}/lists/${listId}/cards/${updatedTask._id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedTask)
         });
+
+        setColumns(prev => ({
+            ...prev,
+            [listId]: {
+                ...prev[listId],
+                items: prev[listId].items.map(card =>
+                    card._id === updatedTask._id ? updatedTask : card
+                )
+            }
+        }));
         setPopup(null);
     };
+
+    const handleDeleteCard = async (listId, taskId) => {
+        await fetch(`/api/project/${id}/lists/${listId}/cards/${taskId}`, {
+            method: "DELETE"
+        });
+        setColumns(prev => ({
+            ...prev,
+            [listId]: {
+                ...prev[listId],
+                items: prev[listId].items.filter(card => card._id !== taskId)
+            }
+        }));
+        setPopup(null);
+    };
+
 
     useEffect(() => {
         async function fetchProject() {
             try {
                 const res = await fetch(`/api/project/${id}`);
                 if (!res.ok) {
-                const errorData = await res.json();
-                console.error("API error:", errorData.error);
-                return;
+                    console.error("API error:", errorData.error);
+                    return;
                 }
                 const data = await res.json();
                 setProject(data);
@@ -200,6 +235,26 @@ export default function Project() {
 
         fetchProject();
     }, [id]);
+
+    useEffect(() => {
+        if (project) {
+            const columnsData = {};
+            const order = [];
+
+            if (project?.lists?.length) {
+                project.lists.forEach(list => {
+                    columnsData[list._id] = {
+                        name: list.name,
+                        items: list.cards
+                    };
+                    order.push(list._id);
+                });
+            };
+
+            setColumns(columnsData);
+            setColumnOrder(order);
+        }
+    }, [project]);
 
     if (!project) return <div className='text-center text-2xl'>Loading...</div>;
 
@@ -389,7 +444,7 @@ export default function Project() {
             {popup?.type === "addCard" && (
                 <AddCardPopup
                     onClose={() => setPopup(null)}
-                    onAdd={(taskTitle) => handleAddTask(popup.columnId, taskTitle)}
+                    onAdd={(taskTitle) => handleAddCard(popup.columnId, taskTitle)}
                 />
             )}
             {popup?.type === "renameList" && (
@@ -412,19 +467,18 @@ export default function Project() {
                 <EditCardPopup
                     task={getTask(popup.columnId, popup.taskId)}
                     onClose={() => setPopup(null)}
-                    onSave={(updatedTask) => handleEditTask(popup.columnId, updatedTask)}
+                    onSave={(updatedTask) => handleEditCard(popup.columnId, updatedTask)}
                 />
             )}
 
             {popup?.type === "deleteCard" && (
                 <ConfirmDeletePopup
                     onClose={() => setPopup(null)}
-                    onDelete={() => handleDeleteTask(popup.columnId, popup.taskId)}
+                    onDelete={() => handleDeleteCard(popup.columnId, popup.taskId)}
                 >
                     <p>Are you sure you want to delete this card?</p>
                 </ConfirmDeletePopup>
             )}
-
         </div>
     );
 }
