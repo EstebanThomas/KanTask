@@ -63,18 +63,18 @@ export default function account(){
         }
 
         const updateData = {
-        name,
-        email,
-        ...(password && { password }),
+            name,
+            email,
+            ...(password && { password }),
         };
 
         const res = await fetch("/api/user", {
-        method: "PUT", // PUT or PATCH
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(updateData),
+            method: "PUT", // PUT or PATCH
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(updateData),
         });
 
         if (res.ok) {

@@ -14,35 +14,72 @@ export default function projects(){
     const router = useRouter();
 
     useEffect(() => {
-        const fetchUser = async () => {
+        const fetchUserAndProjects = async () => {
             try {
-                const res = await fetch("/api/user", {
-                    credentials: "include",
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setUser(data);
+                const resUser = await fetch("/api/user", { credentials: "include" });
+                if (resUser.ok) {
+                    const dataUser = await resUser.json();
+                    setUser(dataUser);
+
+                    const resProjects = await fetch(`/api/projects/user/${dataUser.id}`);
+                    if (resProjects.ok) {
+                        const dataProjects = await resProjects.json();
+                        setProjects(dataProjects);
+                    } else {
+                        console.error("Failed to fetch projects");
+                    }
                 } else {
                     console.error("Failed to fetch user");
                     router.push("/");
                 }
             } catch (error) {
-                console.error("Error fetching user:", error);
+                console.error("Error fetching user or projects:", error);
                 router.push("/");
             }
         };
 
-        fetchUser();
+        fetchUserAndProjects();
     }, []);
 
     const [projects, setProjects] = useState([])
     const [editingProject, setEditingProject] = useState(null)
     const [newTitle, setNewTitle] = useState('')
     const [projectToDelete, setProjectToDelete] = useState(null);
+    const handleProjectClick = (id) => {
+        router.push(`/project/${id}`);
+    };
 
-    const AddProject = () => {
-        setProjects([...projects, { id: Date.now(), title: 'TITLE' }])
-    }
+    const fetchProjects = async () => {
+        try {
+            const res = await fetch(`/api/projects/user/${user.id}`);
+            if (res.ok) {
+                const dataProjects = await res.json();
+                setProjects(dataProjects);
+            } else {
+                console.error("Failed to fetch projects");
+            }
+        } catch (error) {
+            console.error("Error fetching projects:", error);
+        }
+    };
+
+    const AddProject = async () => {
+        try {
+            const res = await fetch("/api/projects", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: "New Project", userId: user.id }),
+            });
+
+            if (res.ok) {
+                await fetchProjects();
+            } else {
+                console.error("Failed to create project");
+            }
+        } catch (err) {
+            console.error("Error creating project:", err);
+        }
+    };
 
     const DeleteProject = (id) => {
         setProjects(projects.filter(project => project.id !== id))
@@ -53,12 +90,20 @@ export default function projects(){
         setNewTitle(project.title)
     }
 
-    const ConfirmEdit = () => {
-        setProjects(projects.map(p =>
-            p.id === editingProject.id ? { ...p, title: newTitle } : p
-        ))
-        setEditingProject(null)
-    }
+    const ConfirmEdit = async (title) => {
+        try {
+            await fetch(`/api/projects/${editingProject.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: title }),
+            });
+
+            await fetchProjects();
+            setEditingProject(null);
+        } catch (err) {
+            console.error("Error renaming project:", err);
+        }
+    };
 
     const CancelEdit = () => {
         setEditingProject(null)
@@ -68,9 +113,16 @@ export default function projects(){
         setProjectToDelete(project);
     };
 
-    const ConfirmDelete = () => {
-        DeleteProject(projectToDelete.id);
-        setProjectToDelete(null);
+    const ConfirmDelete = async () => {
+        try {
+            await fetch(`/api/projects/${projectToDelete.id}`, {
+                method: "DELETE",
+            });
+            await fetchProjects();
+            setProjectToDelete(null);
+        } catch (err) {
+            console.error("Error deleting project:", err);
+        }
     };
 
     const CancelDelete = () => {
@@ -172,7 +224,7 @@ export default function projects(){
                             />
                         </button>
                         <div className='absolute top-4/7 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-auto max-w-full max-h-full whitespace-nowrap p-2'>
-                            <h1><a id='projectTitle'>{project.title}</a></h1>
+                            <h1 onClick={() => handleProjectClick(project.id)} className='hover:decoration-2 hover:underline underline-offset-3 decoration-black hover:font-bold hover:text-black'>{project.title}</h1>
                         </div>
                     </div>
                 ))}
@@ -181,11 +233,8 @@ export default function projects(){
                 <EditProjectPopup
                     currentTitle={editingProject.title}
                     onClose={CancelEdit}
-                    onSave={(title) => {
-                    setProjects(projects.map(p =>
-                        p.id === editingProject.id ? { ...p, title } : p
-                    ));
-                    setEditingProject(null);
+                    onSave={async (title) => {
+                        await ConfirmEdit(title);
                     }}
                 />
                 )}

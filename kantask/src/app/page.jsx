@@ -23,9 +23,9 @@ export default function Home(){
         fetchUser();
     }, []);
 
-    const goToAccount = () => {
+    const goToProjects = () => {
         if (user) {
-            router.push(`/account/${user.id}`);
+            router.push(`/projects/${user.id}`);
         }
     };
 
@@ -47,7 +47,7 @@ export default function Home(){
             {user && (
                 <div className='flex justify-center items-center mt-5'>
                     <button
-                    onClick={goToAccount}
+                    onClick={goToProjects}
                     className="btn-primary"
                     title="Go to my account"
                     >

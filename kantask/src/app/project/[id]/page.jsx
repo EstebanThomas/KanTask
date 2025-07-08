@@ -3,14 +3,38 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams} from "next/navigation";
+import { useRouter } from 'next/navigation';
 
-import AddCardPopup from "../../components/AddCardPopup";
-import RenameListPopup from "../../components/RenameListPopup";
-import ConfirmDeletePopup from "../../components/ConfirmDeletePopup";
-import EditCardPopup from "../../components/EditCardPopup";
+import AddCardPopup from "../../../components/AddCardPopup";
+import RenameListPopup from "../../../components/RenameListPopup";
+import ConfirmDeletePopup from "../../../components/ConfirmDeletePopup";
+import EditCardPopup from "../../../components/EditCardPopup";
 
 export default function Project() {
+
+    const { id } = useParams();
+    const [project, setProject] = useState(null);
+
+    const [user, setUser] = useState({});
+    const router = useRouter();
+
+    const account = () => {
+        router.push(`/account/${user.id}`);
+    };
+
+    const projects = () => {
+        router.push(`/projects/${user.id}`);
+    };
+
+    const signout = async () => {
+        await fetch("/api/signout", {
+        method: "POST",
+        credentials: "include",
+        });
+        router.push("/");
+    };
 
     const [columns, setColumns] = useState({
         backlog: { name: "Backlog", items: [] },
@@ -34,31 +58,26 @@ export default function Project() {
         "done",
     ]);
 
-    // Popup peut contenir différents types, avec info sur liste et tâche
-    // ex : { type: "editTask", columnId, taskId }
     const [popup, setPopup] = useState(null);
 
-    // Fonction pour récupérer une tâche depuis columnId + taskId
     const getTask = (columnId, taskId) => {
         const column = columns[columnId];
         if (!column) return null;
         return column.items.find(task => task.id === taskId) || null;
     };
 
-    // Gestion du drag & drop
     const onDragEnd = (result) => {
         if (!result.destination) return;
 
         const { source, destination, type } = result;
 
+
         if (type === "COLUMN") {
-            // Réordonner les colonnes
             const newColumnOrder = Array.from(columnOrder);
             const [removed] = newColumnOrder.splice(source.index, 1);
             newColumnOrder.splice(destination.index, 0, removed);
             setColumnOrder(newColumnOrder);
         } else {
-            // Déplacer les tâches
             const sourceColumn = columns[source.droppableId];
             const destColumn = columns[destination.droppableId];
             const sourceItems = [...sourceColumn.items];
@@ -91,7 +110,6 @@ export default function Project() {
         }
     };
 
-    // Ajouter une tâche (avec titre uniquement, description vide par défaut)
     const handleAddTask = (listId, taskTitle) => {
         const newTask = { id: Date.now().toString(), title: taskTitle, description: "" };
         setColumns({
@@ -104,10 +122,8 @@ export default function Project() {
         setPopup(null);
     };
 
-    // Renommer une liste ou en créer une nouvelle
     const handleRenameList = (listId, newName) => {
         if (!listId) {
-            // Créer nouvelle liste
             const newId = Date.now().toString();
             setColumns({
                 ...columns,
@@ -123,7 +139,6 @@ export default function Project() {
         setPopup(null);
     };
 
-    // Supprimer une liste
     const handleDeleteList = (listId) => {
         const newColumns = { ...columns };
         delete newColumns[listId];
@@ -134,7 +149,6 @@ export default function Project() {
         setPopup(null);
     };
 
-    // Modifier une tâche (titre + description)
     const handleEditTask = (columnId, updatedTask) => {
         setColumns(prev => {
             const column = prev[columnId];
@@ -153,7 +167,6 @@ export default function Project() {
         setPopup(null);
     };
 
-    // Supprimer une tâche
     const handleDeleteTask = (columnId, taskId) => {
         setColumns(prev => {
             const column = prev[columnId];
@@ -168,6 +181,27 @@ export default function Project() {
         });
         setPopup(null);
     };
+
+    useEffect(() => {
+        async function fetchProject() {
+            try {
+                const res = await fetch(`/api/project/${id}`);
+                if (!res.ok) {
+                const errorData = await res.json();
+                console.error("API error:", errorData.error);
+                return;
+                }
+                const data = await res.json();
+                setProject(data);
+            } catch (err) {
+                console.error("Error loading project", err);
+            }
+        }
+
+        fetchProject();
+    }, [id]);
+
+    if (!project) return <div className='text-center text-2xl'>Loading...</div>;
 
     return (
         <div className="flex flex-col h-screen">
@@ -192,20 +226,14 @@ export default function Project() {
                             <Image src="/Home.svg" alt="Home" width={50} height={50} className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50" />
                         </Link>
                     </button>
-                    <button title='SIGN OUT'>
-                        <Link href="/">
+                    <button title='SIGN OUT' onClick={signout}>
                             <Image src="/Sign.svg" alt="Sign out" width={50} height={50} className="w-12 md:w-18 h-auto hover:bg-bg hover:opacity-50" />
-                        </Link>
                     </button>
-                    <button title='ACCOUNT'>
-                        <Link href="/account">
+                    <button title='ACCOUNT' onClick={account}>
                             <Image src="/User.svg" alt="Modify account" width={50} height={50} className="w-12 md:w-18 h-autohover:bg-bg hover:opacity-50" />
-                        </Link>
                     </button>
-                    <button title='PROJECTS'>
-                        <Link href="/projects">
+                    <button title='PROJECTS' onClick={projects}>
                             <Image src="/Projects.svg" alt="Project manager" width={50} height={50} className="w-12 md:w-18 h-autohover:bg-bg hover:opacity-50" />
-                        </Link>
                     </button>
                 </div>
             </div>
@@ -214,7 +242,7 @@ export default function Project() {
             <div id="board" className="board flex-1 p-4 pt-2 overflow-y-auto">
 
                 <div className='flex justify-between items-center gap-10 overflow-x-auto whitespace-nowrap p-1'>
-                    <h1 className='text-white text-2xl font-bold'>TITLE</h1>                    
+                    <h1 className='text-white text-2xl font-bold'>{project.title}</h1>                    
                     <button onClick={() => setPopup({ type: "renameList", columnId: null })} className="hover:bg-primary hover:opacity-65 rounded-xl" title='Add list'>
                         <Image
                             src="/AddDark.svg"
@@ -235,7 +263,7 @@ export default function Project() {
                             >
                                 {columnOrder.map((columnId, index) => {
                                     const column = columns[columnId];
-                                    if (!column) return null; // sécurité si colonne supprimée
+                                    if (!column) return null;
 
                                     return (
                                         <Draggable draggableId={columnId} index={index} key={columnId}>
