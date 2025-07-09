@@ -53,7 +53,7 @@ export default function Project() {
         return column.items.find(card => card._id === cardId) || null;
     };
 
-    const onDragEnd = async (result) => {
+    const onDragEnd = async (result, listId) => {
         if (!result.destination) return;
 
         const { source, destination, type } = result;
@@ -93,14 +93,14 @@ export default function Project() {
             }
 
             // Update position
-            await fetch(`/api/project/${id}/cards/move`, {
+            await fetch(`/api/project/${id}/lists/${listId}/cards/move`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    cardId: moved._id,
-                    fromListId: source.droppableId,
-                    toListId: destination.droppableId,
-                    newIndex: destination.index
+                    cardId: moved._id,                      //card id to be moved
+                    fromListId: source.droppableId,         //old list id
+                    toListId: destination.droppableId,      //new list id
+                    newIndex: destination.index             //new position
                 })
             });
         }
