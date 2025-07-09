@@ -33,3 +33,30 @@ export async function DELETE(req, { params }) {
         return new Response(JSON.stringify({ error: "Server error" }), { status: 500 });
     }
 }
+
+export async function PATCH(req, { params }) {
+    try {
+        const { cardId } = params;
+        const data = await req.json();
+
+        await connectMongoDB();
+
+        // Update card with new data (ex: title, description)
+        const updatedCard = await Card.findByIdAndUpdate(cardId, data, {
+        new: true,
+        runValidators: true,
+        });
+
+        if (!updatedCard) {
+        return new Response(JSON.stringify({ error: "Card not found" }), { status: 404 });
+        }
+
+        return new Response(JSON.stringify(updatedCard), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+        });
+    } catch (err) {
+        console.error(err);
+        return new Response(JSON.stringify({ error: "Server error" }), { status: 500 });
+    }
+}
