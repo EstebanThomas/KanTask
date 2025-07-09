@@ -2,12 +2,13 @@ import { connectDB } from "../../../../../lib/mysql";
 import { connectMongoDB } from "../../../../../lib/mongo";
 import mongoose from "mongoose";
 import List from "../../../../models/List";
+import Card from "../../../../models/Card";
 
 export async function GET(req, { params }) {
     try {
         await connectMongoDB();
 
-        const { id } = params;
+        const { id } =  await params;
 
         if (isNaN(id)) {
             return new Response(JSON.stringify({ error: "Invalid project ID" }), { status: 400 });
@@ -29,11 +30,23 @@ export async function GET(req, { params }) {
 
         const project = rows[0];
 
-        let lists = await List.find({ project_id: project.id }).lean();
+        let lists = await List.find({ project_id: project.id })
+        .populate("cards")
+        .lean();
+
+        lists = Array.isArray(lists) ? lists : [];
 
         if (project.list_order) {
             const order = JSON.parse(project.list_order);
-            lists.sort((a, b) => order.indexOf(a._id.toString()) - order.indexOf(b._id.toString()));
+
+            if (Array.isArray(order) && order.length > 0) {
+                lists.sort((a, b) => {
+                    const indexA = order.indexOf(a._id.toString());
+                    const indexB = order.indexOf(b._id.toString());
+
+                    return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+                });
+            }
         }
 
         return new Response(
@@ -52,6 +65,7 @@ export async function GET(req, { params }) {
 // CREATE
 export async function POST(req, { params }) {
     try {
+        await connectMongoDB()
         const { id } = params;
         const { name } = await req.json();
 

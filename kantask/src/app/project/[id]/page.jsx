@@ -11,6 +11,7 @@ import AddCardPopup from "../../../components/AddCardPopup";
 import RenameListPopup from "../../../components/RenameListPopup";
 import ConfirmDeletePopup from "../../../components/ConfirmDeletePopup";
 import EditCardPopup from "../../../components/EditCardPopup";
+import ConfirmDeleteCard from '../../../components/ConfirmDeleteCard';
 
 export default function Project() {
 
@@ -37,33 +38,19 @@ export default function Project() {
     };
 
     const [columns, setColumns] = useState({
-        backlog: { name: "Backlog", items: [] },
-        todo: {
-            name: "To do",
-            items: [
-                { id: "1", title: "Card 1", description: "Description of card 1" },
-                { id: "2", title: "Card 2", description: "Description of card 2" }
-            ]
-        },
-        doing: { name: "Doing", items: [{ id: "3", title: "Card 3", description: "Description of card 3" }] },
-        testing: { name: "Testing", items: [] },
-        done: { name: "Done", items: [] },
+
     });
 
     const [columnOrder, setColumnOrder] = useState([
-        "backlog",
-        "todo",
-        "doing",
-        "testing",
-        "done",
+
     ]);
 
     const [popup, setPopup] = useState(null);
 
-    const getTask = (columnId, taskId) => {
+    const getCard = (columnId, cardId) => {
         const column = columns[columnId];
         if (!column) return null;
-        return column.items.find(task => task.id === taskId) || null;
+        return column.items.find(card => card._id === cardId) || null;
     };
 
     const onDragEnd = async (result) => {
@@ -120,11 +107,11 @@ export default function Project() {
     };
 
 
-    const handleAddCard = async (listId, taskTitle) => {
+    const handleAddCard = async (listId, cardTitle) => {
         const res = await fetch(`/api/project/${id}/lists/${listId}/cards`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title: taskTitle, description: "" })
+            body: JSON.stringify({ title: cardTitle, description: "" })
         });
         const newCard = await res.json();
 
@@ -184,11 +171,11 @@ export default function Project() {
     };
 
 
-    const handleEditCard = async (listId, updatedTask) => {
-        await fetch(`/api/project/${id}/lists/${listId}/cards/${updatedTask._id}`, {
+    const handleEditCard = async (listId, updatedCard) => {
+        await fetch(`/api/project/${id}/lists/${listId}/cards/${updatedCard._id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedTask)
+            body: JSON.stringify(updatedCard)
         });
 
         setColumns(prev => ({
@@ -196,27 +183,26 @@ export default function Project() {
             [listId]: {
                 ...prev[listId],
                 items: prev[listId].items.map(card =>
-                    card._id === updatedTask._id ? updatedTask : card
+                    card._id === updatedCard._id ? updatedCard : card
                 )
             }
         }));
         setPopup(null);
     };
 
-    const handleDeleteCard = async (listId, taskId) => {
-        await fetch(`/api/project/${id}/lists/${listId}/cards/${taskId}`, {
+    const handleDeleteCard = async (listId, cardId) => {
+        await fetch(`/api/project/${id}/lists/${listId}/cards/${cardId}`, {
             method: "DELETE"
         });
         setColumns(prev => ({
             ...prev,
             [listId]: {
                 ...prev[listId],
-                items: prev[listId].items.filter(card => card._id !== taskId)
+                items: prev[listId].items.filter(card => card._id !== cardId)
             }
         }));
         setPopup(null);
     };
-
 
     useEffect(() => {
         async function fetchProject() {
@@ -361,15 +347,19 @@ export default function Project() {
                                                         </div>
                                                     </div>
 
-                                                    <Droppable droppableId={columnId} type="TASK">
+                                                    <Droppable droppableId={columnId} type="CARDS">
                                                         {(provided) => (
                                                             <div
                                                                 {...provided.droppableProps}
                                                                 ref={provided.innerRef}
                                                                 className="min-h-[100px] p-2 rounded"
-                                                            >
+                                                            >                                                               
                                                                 {column.items.map((item, index) => (
-                                                                    <Draggable key={item.id} draggableId={item.id} index={index}>
+                                                                    <Draggable 
+                                                                        key={item._id.toString()} 
+                                                                        draggableId={item._id.toString()} 
+                                                                        index={index}
+                                                                    >
                                                                         {(provided) => (
                                                                             <div
                                                                                 ref={provided.innerRef}
@@ -381,7 +371,7 @@ export default function Project() {
                                                                                 <p className="text-sm overflow-hidden flex flex-wrap">{item.description}</p>
                                                                                 <div className="flex gap-2 mt-1 actions">
                                                                                     <button
-                                                                                        onClick={() => setPopup({ type: "editCard", columnId, taskId: item.id })}
+                                                                                        onClick={() => setPopup({ type: "editCard", columnId, cardId: item._id })}
                                                                                         className="text-blue-600 hover:bg-white hover:opacity-65"
                                                                                         title="Edit card"
                                                                                     >
@@ -394,7 +384,7 @@ export default function Project() {
                                                                                         />
                                                                                     </button>
                                                                                     <button
-                                                                                        onClick={() => setPopup({ type: "deleteCard", columnId, taskId: item.id })}
+                                                                                        onClick={() => setPopup({ type: "deleteCard", columnId, cardId: item._id })}
                                                                                         className="text-red-600 hover:bg-white hover:opacity-65"
                                                                                         title="Delete card"
                                                                                     >
@@ -444,7 +434,7 @@ export default function Project() {
             {popup?.type === "addCard" && (
                 <AddCardPopup
                     onClose={() => setPopup(null)}
-                    onAdd={(taskTitle) => handleAddCard(popup.columnId, taskTitle)}
+                    onAdd={(cardTitle) => handleAddCard(popup.columnId, cardTitle)}
                 />
             )}
             {popup?.type === "renameList" && (
@@ -465,19 +455,19 @@ export default function Project() {
 
             {popup?.type === "editCard" && (
                 <EditCardPopup
-                    task={getTask(popup.columnId, popup.taskId)}
+                    task={getCard(popup.columnId, popup.cardId)}
                     onClose={() => setPopup(null)}
-                    onSave={(updatedTask) => handleEditCard(popup.columnId, updatedTask)}
+                    onSave={(updatedCard) => handleEditCard(popup.columnId, updatedCard)}
                 />
             )}
 
             {popup?.type === "deleteCard" && (
-                <ConfirmDeletePopup
+                <ConfirmDeleteCard
                     onClose={() => setPopup(null)}
-                    onDelete={() => handleDeleteCard(popup.columnId, popup.taskId)}
+                    onDelete={() => handleDeleteCard(popup.columnId, popup.cardId)}
                 >
                     <p>Are you sure you want to delete this card?</p>
-                </ConfirmDeletePopup>
+                </ConfirmDeleteCard>
             )}
         </div>
     );

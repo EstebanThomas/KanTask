@@ -2,7 +2,7 @@ import { connectDB } from "../../../../../../../lib/mysql";
 
 export async function PATCH(req, { params }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const { newOrder } = await req.json();
 
         if (!Array.isArray(newOrder)) {

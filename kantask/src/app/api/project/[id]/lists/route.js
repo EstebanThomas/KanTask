@@ -4,7 +4,7 @@ import List from "../../../../../models/List";
 
 export async function POST(req, { params }) {
     try {
-        const { id } = params; // project id
+        const { id } = await params; // project id
         const { name } = await req.json();
 
         if (!name) {

@@ -8,7 +8,7 @@ const cardSchema = new mongoose.Schema({
 const listSchema = new mongoose.Schema({
     name: { type: String, required: true },
     project_id: { type: String, required: true },
-    cards: [cardSchema],
+    cards: [{ type: mongoose.Schema.Types.ObjectId, ref: "Card" }]
 }, { timestamps: true });
 
 export default mongoose.models.List || mongoose.model("List", listSchema);
