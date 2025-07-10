@@ -16,10 +16,16 @@ export default function signup(){
 
     const [message, setMessage] = useState("");
 
+    const sanitizeInput = (value) => {
+        const div = document.createElement("div");
+        div.textContent = value;
+        return div.innerHTML.trim();
+    };
+
     const handleChange = (e) => {
         setFormData({
-        ...formData,
-        [e.target.name]: e.target.value,
+            ...formData,
+            [e.target.name]: sanitizeInput(e.target.value),
         });
     };
 
