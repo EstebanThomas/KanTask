@@ -41,8 +41,8 @@ export default function Home(){
                 />
             </div>
             <div className="text-center lg:grid lg:grid-cols-8 lg:grid-row-2 mt-5 whitespace-nowrap">
-                <h1 className="col-start-4">Parce que chaque{' '}<span className='title-effect'>tâche</span></h1>
-                <h1 className="col-start-5 row-start-2">mérite sa{' '}<span className='title-effect'>place</span></h1>
+                <h1 className="col-start-4">because every{' '}<span className='title-effect'>task</span></h1>
+                <h1 className="col-start-5 row-start-2">deserves its{' '}<span className='title-effect'>place</span></h1>
             </div>
             {user && (
                 <div className='flex justify-center items-center mt-5'>
@@ -56,11 +56,11 @@ export default function Home(){
                 </div>
                 )}
             <p className="text-center text-2xl max-w-3xl mx-auto leading-relaxed mt-5">
-                Kantask est une application web intuitive de gestion de tâches, pensée pour allier{' '}
-                <strong>clarté</strong>,{' '}
-                <strong>simplicité</strong>{' '}
-                et <strong>efficacité</strong>{' '}
-                au quotidien.
+                Kantask is an intuitive web-based task management application, designed to combine{' '}
+                <strong>clarity</strong>,{' '}
+                <strong>simplicity</strong>{' '}
+                et <strong>efficiency</strong>{' '}
+                daily.
             </p>
             <div className='flex justify-center items-center gap-15 md:gap-50 mt-10'>
                 <Link href="/signin">
@@ -90,11 +90,11 @@ export default function Home(){
                     />
                 </div>
                 <p className='text-center text-2xl max-w-sm leading-relaxed'>
-                    Elle vous aide à {' '}
-                    <strong>organiser</strong> {' '}
-                    vos idées,{' '}
-                    <strong>prioriser</strong> {' '}
-                    vos actions et avancer sereinement, seul ou en équipe.
+                    The application helps you {' '}
+                    <strong>organize</strong> {' '}
+                    your ideas,{' '}
+                    <strong>prioritize</strong> {' '}
+                    your actions and move forward calmly.
                 </p>
             </div>
         </main>
